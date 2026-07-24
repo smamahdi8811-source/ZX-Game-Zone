@@ -1,0 +1,30 @@
+
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tic Tac Toe AI</title><style>
+body{font-family:Arial;background:#111827;color:#fff;text-align:center}
+.board{display:grid;grid-template-columns:repeat(3,90px);gap:8px;justify-content:center;margin:20px}
+button.cell{width:90px;height:90px;font-size:42px}
+</style></head><body>
+<h2>Tic Tac Toe AI</h2>
+<div>🪙 Coins: <span id=c>0</span></div><div id=s>Your turn (X)</div>
+<div class=board id=b></div><button onclick=reset()>Restart</button>
+<script>
+let board=Array(9).fill(""),over=false;
+let coins=+localStorage.coins||0; c.textContent=coins;
+const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+for(let i=0;i<9;i++){let x=document.createElement('button');x.className='cell';x.onclick=()=>human(i,x);b.appendChild(x);}
+function chk(p){return wins.some(w=>w.every(i=>board[i]==p))}
+function human(i,el){if(over||board[i])return;board[i]='X';el.textContent='X';if(end())return;ai();}
+function ai(){let best=-1,bestScore=-99;
+for(let i=0;i<9;i++)if(!board[i]){board[i]='O';let sc=minimax(false);board[i]='';if(sc>bestScore){bestScore=sc;best=i;}}
+board[best]='O';b.children[best].textContent='O';end();}
+function minimax(max){if(chk('O'))return 1;if(chk('X'))return -1;if(board.every(v=>v))return 0;
+let best=max?-99:99;
+for(let i=0;i<9;i++)if(!board[i]){board[i]=max?'O':'X';let sc=minimax(!max);board[i]='';best=max?Math.max(best,sc):Math.min(best,sc);}
+return best;}
+function end(){if(chk('X')){coins+=100;localStorage.coins=coins;c.textContent=coins;s.textContent='You Win! +100';over=true;return true;}
+if(chk('O')){s.textContent='AI Wins';over=true;return true;}
+if(board.every(v=>v)){coins+=20;localStorage.coins=coins;c.textContent=coins;s.textContent='Draw +20';over=true;return true;}
+return false;}
+function reset(){board=Array(9).fill("");over=false;s.textContent='Your turn (X)';[...b.children].forEach(x=>x.textContent='');}
+</script></body></html>
